@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaisonCare</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #fff;
+  color: #333;
+}
+
+/* HERO */
+.hero {
+  height: 100vh;
+  background:
+    linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+    url('https://img.freepik.com/free-photo/happy-beautiful-couple-posing-with-shopping-bags-violet_23-2148390611.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-content {
+  color: #fff;
+}
+
+.hero h1 {
+  font-size: 3rem;
+}
+
+.hero p {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+.btn {
+  padding: 12px 20px;
+  background: #ff4da6;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* PRODUCTS */
+.products {
+  padding: 40px 20px;
+}
+
+.products h2 {
+  margin-bottom: 20px;
+}
+
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  scroll-behavior: smooth;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.product {
+  min-width: 250px;
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  background: #fff;
+}
+
+.product img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* CART */
+.cart {
+  padding: 40px 20px;
+  background: #f9f9f9;
+}
+
+#cartList {
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+}
+
+/* FOOTER */
+footer {
+  padding: 20px;
+  text-align: center;
+  background: #111;
+  color: #fff;
+}
+
+/* WHATSAPP */
+.whatsapp {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: green;
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>MaisonCare</h1>
+    <p>Glow loud, Glow proud</p>
+    <button class="btn" onclick="scrollToProducts()">Shop Now</button>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <h2>Our Products</h2>
+  <div class="carousel" id="carousel"></div>
+</section>
+
+<!-- CART -->
+<section class="cart">
+  <h2>Your Order</h2>
+  <ul id="cartList"></ul>
+
+  <input type="text" id="name" placeholder="Your Name">
+  <input type="text" id="phone" placeholder="Phone Number">
+
+  <button class="btn" onclick="sendOrder()">Send Order</button>
+</section>
+
+<footer>
+  <p>📍 Nashik | 📞 WhatsApp: 7972647477</p>
+</footer>
+
+<a class="whatsapp" href="https://wa.me/917972647477" target="_blank">💬</a>
+
+<!-- EMAILJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script>
+emailjs.init("YOUR_PUBLIC_KEY");
+
+/* PRODUCTS */
+const products = [
+  {name: "Glow Serum", img: "https://i.ibb.co/KzyYTtKf/Screenshot-2026-03-30-23-02-40-340-edit-com-google-android-googlequicksearchbox.jpg"},
+  {name: "Face Cleanser", img: "https://i.ibb.co/sdFpd7s6/Screenshot-2026-03-30-23-03-51-728-edit-com-google-android-googlequicksearchbox.jpg"},
+  {name: "Moisturizer", img: "https://i.ibb.co/TDNvHgpB/Screenshot-2026-03-30-23-04-18-729-edit-com-google-android-googlequicksearchbox.jpg"},
+  {name: "Sunscreen", img: "https://i.ibb.co/7twJkWQB/Screenshot-2026-03-30-23-04-45-180-edit-com-google-android-googlequicksearchbox.jpg"},
+  {name: "Night Cream", img: "https://i.ibb.co/jkBWZrqH/Screenshot-2026-03-30-23-05-09-987-edit-com-google-android-googlequicksearchbox.jpg"},
+  {name: "Face Mist", img: "https://i.ibb.co/wFN0bP52/Screenshot-2026-03-30-23-06-08-922-edit-com-google-android-googlequicksearchbox.jpg"},
+  {name: "Vitamin C", img: "https://i.ibb.co/93tZF7dN/Screenshot-2026-03-30-23-06-49-639-edit-com-google-android-googlequicksearchbox.jpg"}
+];
+
+const carousel = document.getElementById("carousel");
+const cart = [];
+
+/* LOAD PRODUCTS */
+products.forEach((p, i) => {
+  const div = document.createElement("div");
+  div.className = "product";
+  div.innerHTML = `
+    <img src="${p.img}">
+    <h3>${p.name}</h3>
+    <button class="btn" onclick="addToCart(${i})">Add to Cart</button>
+  `;
+  carousel.appendChild(div);
+});
+
+/* AUTO SCROLL */
+setInterval(() => {
+  carousel.scrollBy({ left: 260, behavior: "smooth" });
+}, 3000);
+
+/* FUNCTIONS */
+function scrollToProducts() {
+  document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+}
+
+function addToCart(index) {
+  cart.push(products[index].name);
+  renderCart();
+}
+
+function renderCart() {
+  const list = document.getElementById("cartList");
+  list.innerHTML = "";
+
+  cart.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.appendChild(li);
+  });
+}
+
+function sendOrder() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!name || !phone || cart.length === 0) {
+    alert("Please fill all details and add products.");
+    return;
+  }
+
+  const params = {
+    name: name,
+    phone: phone,
+    order: cart.join(", ")
+  };
+
+  emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", params)
+    .then(() => {
+      alert("Order Sent Successfully!");
+    })
+    .catch(() => {
+      alert("Failed to send order.");
+    });
+}
+</script>
+
+</body>
+</html>
